@@ -27,7 +27,15 @@ e.x.a.mple@gmail.com
 
 ## 🚀 Live Demo
 
-**[Try it live on Netlify →](https://your-site-name.netlify.app)**
+**[✨ Try it live on Netlify →](https://gmail-dot-generator.netlify.app)**
+
+### 📸 Screenshots
+
+**Homepage - Modern Glassmorphism Design:**
+![Email Dot Generator Homepage](https://github.com/risterz/email-dot-generator/assets/130717663/email-dot-generator-homepage.png)
+
+**Results Page - Clickable Email List:**
+![Email Dot Generator Results](https://github.com/risterz/email-dot-generator/assets/130717663/email-dot-generator-results.png)
 
 ## 🛠️ Technologies Used
 
@@ -35,10 +43,6 @@ e.x.a.mple@gmail.com
 - CSS3 (Glassmorphism design)
 - Vanilla JavaScript
 - Google Fonts (Inter)
-
-## 📱 Screenshots
-
-*Modern, clean interface with beautiful animations and responsive design*
 
 ## 🚀 How to Deploy on Netlify
 
@@ -90,5 +94,4 @@ This project is licensed under the GNU General Public License v2.0 - see the [LI
 <div align="center">
   <p>Made with ❤️ for email productivity</p>
   <p>⭐ Star this repo if you found it helpful!</p>
-</div>
 </div>
