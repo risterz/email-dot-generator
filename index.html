@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Risterz">
+    <meta name="description" content="Generate email variations with dots - Modern Email Dot Generator by Risterz">
+    <title>Email Dot Generator - Risterz</title>
+    <meta name="msapplication-TileColor" content="#667eea">
+    <meta name="theme-color" content="#667eea">
+    <link rel="shortcut icon" href="assets/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="assets/style.css">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Email Dot Generator - Risterz">
+    <meta property="og:description" content="Generate all possible email variations with dots instantly">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="assets/favicon.ico">
+</head>
+<body>
+    <div class="header">
+        <a href="" title="Risterz - Email Tools">
+            <span style="font-size: 32px; margin-right: 10px;">✉️</span>
+            RISTERZ
+        </a>
+    </div>
+
+    <!-- Results container (initially hidden) -->
+    <div id="results" class="box" style="display: none;">
+        <div class="title" id="resultsTitle">
+            <span style="margin-right: 10px;">📊</span>
+            Total: 0 variations
+        </div>
+        <div class="email-list-container">
+            <div id="emailList" class="email-list"></div>
+        </div>
+        <div id="successMessage" style="display: none;" class="success-message">
+            ✅ Successfully generated email variations!
+        </div>
+        <button onclick="copyAllEmails()" class="copy-btn">
+            <span id="copyIcon">📋</span> Copy All
+        </button>
+    </div>
+
+    <div class="box">
+        <div class="title">
+            <span style="margin-right: 10px;">🎯</span>
+            Email Dot Generator
+        </div>
+        <form id="emailForm">
+            <input type="email" id="emailInput" name="email" 
+                   placeholder="✉️ Enter your email address (e.g., example@gmail.com)" 
+                   autocomplete="off" required>
+            <button type="submit" id="generateBtn">
+                <span id="btnIcon">⚡</span>
+                <span id="btnText">Generate Variations</span>
+            </button>
+        </form>
+        <div style="margin-top: 20px; color: rgba(102, 126, 234, 0.7); font-size: 14px;">
+            💡 This tool generates all possible email variations by adding dots in different positions
+        </div>
+    </div>
+
+    <div class="footer">
+        &copy; Copyright <span id="currentYear"></span> - 
+        <a href="#" title="Risterz Portfolio">Risterz</a>
+        <div style="margin-top: 8px; font-size: 12px; opacity: 0.7;">
+            Made with ❤️ for email productivity
+        </div>
+    </div>
+
+<script>
+// Set current year
+document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+// JavaScript version of the PHP addDOT function
+function addDOT(str) {
+    if (str.length > 1) {
+        // Split string into array of characters
+        let ca = str.split('');
+        // Remove first character as head
+        let head = ca.shift();
+        // Get recursive results for remaining string
+        let res = addDOT(ca.join(''));
+        let result = [];
+        
+        // For each result, create two versions: with and without dot
+        res.forEach(function(val) {
+            result.push(head + val);
+            result.push(head + '.' + val);
+        });
+        
+        return result;
+    }
+    return [str];
+}
+
+// Enhanced form submission with animations and better UX
+document.getElementById('emailForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    let emailInput = document.getElementById('emailInput').value.trim();
+    let generateBtn = document.getElementById('generateBtn');
+    let btnText = document.getElementById('btnText');
+    let btnIcon = document.getElementById('btnIcon');
+    
+    if (!emailInput) {
+        showNotification('Please enter an email address', 'error');
+        return;
+    }
+    
+    // Split email into username and domain
+    let emailParts = emailInput.split('@');
+    if (emailParts.length !== 2) {
+        showNotification('Please enter a valid email address', 'error');
+        return;
+    }
+    
+    // Show loading state
+    generateBtn.disabled = true;
+    btnText.textContent = 'Generating...';
+    btnIcon.innerHTML = '<div class="loading"></div>';
+    
+    // Simulate processing time for better UX
+    setTimeout(function() {
+        let username = emailParts[0].trim();
+        let domain = '@' + emailParts[1].trim();
+        
+        // Generate dot variations
+        let variations = addDOT(username);
+        
+        // Create full email addresses
+        let fullEmails = variations.map(function(variation) {
+            return variation + domain;
+        });
+        
+        // Display results with animation
+        document.getElementById('resultsTitle').innerHTML = 
+            '<span style="margin-right: 10px;">📊</span>Total: ' + fullEmails.length + ' variations';
+        
+        // Create clickable email list
+        createClickableEmailList(fullEmails);
+        
+        document.getElementById('results').style.display = 'block';
+        document.getElementById('successMessage').style.display = 'block';
+        
+        // Reset button state
+        generateBtn.disabled = false;
+        btnText.textContent = 'Generate Variations';
+        btnIcon.textContent = '⚡';
+        
+        // Show success notification
+        showNotification('Successfully generated ' + fullEmails.length + ' email variations!', 'success');
+        
+        // Scroll to results
+        document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        
+        // Hide success message after 3 seconds
+        setTimeout(function() {
+            document.getElementById('successMessage').style.display = 'none';
+        }, 3000);
+        
+    }, 800); // Small delay for better UX
+});
+
+// Create clickable email list
+function createClickableEmailList(emails) {
+    let emailList = document.getElementById('emailList');
+    emailList.innerHTML = '';
+    
+    emails.forEach(function(email, index) {
+        let emailItem = document.createElement('div');
+        emailItem.className = 'email-item';
+        emailItem.innerHTML = `
+            <span class="email-text">${email}</span>
+            <button class="copy-single-btn" onclick="copySingleEmail('${email}', ${index})" title="Click to copy">
+                <span id="copyIcon${index}">📋</span>
+            </button>
+        `;
+        
+        // Add click event to the entire item for copying
+        emailItem.addEventListener('click', function() {
+            copySingleEmail(email, index);
+        });
+        
+        emailList.appendChild(emailItem);
+    });
+}
+
+// Copy single email function
+function copySingleEmail(email, index) {
+    let copyIcon = document.getElementById('copyIcon' + index);
+    
+    try {
+        // Use modern clipboard API if available
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(email).then(function() {
+                copySuccess();
+            }).catch(function() {
+                fallbackCopy();
+            });
+        } else {
+            fallbackCopy();
+        }
+    } catch (err) {
+        fallbackCopy();
+    }
+    
+    function fallbackCopy() {
+        // Fallback method
+        let textArea = document.createElement('textarea');
+        textArea.value = email;
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            copySuccess();
+        } catch (err) {
+            showNotification('Failed to copy. Please try again.', 'error');
+        }
+        document.body.removeChild(textArea);
+    }
+    
+    function copySuccess() {
+        copyIcon.textContent = '✅';
+        showNotification(`Copied: ${email}`, 'success');
+        
+        // Reset icon after 2 seconds
+        setTimeout(function() {
+            copyIcon.textContent = '📋';
+        }, 2000);
+    }
+}
+
+// Enhanced copy all emails function
+function copyAllEmails() {
+    let emailList = document.getElementById('emailList');
+    let emails = [];
+    
+    // Extract all emails from the list
+    emailList.querySelectorAll('.email-text').forEach(function(emailElement) {
+        emails.push(emailElement.textContent);
+    });
+    
+    let allEmailsText = emails.join('\n');
+    let copyIcon = document.getElementById('copyIcon');
+    
+    try {
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(allEmailsText).then(function() {
+                copyAllSuccess();
+            }).catch(function() {
+                fallbackCopyAll();
+            });
+        } else {
+            fallbackCopyAll();
+        }
+    } catch (err) {
+        fallbackCopyAll();
+    }
+    
+    function fallbackCopyAll() {
+        let textArea = document.createElement('textarea');
+        textArea.value = allEmailsText;
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            copyAllSuccess();
+        } catch (err) {
+            showNotification('Failed to copy all. Please try again.', 'error');
+        }
+        document.body.removeChild(textArea);
+    }
+    
+    function copyAllSuccess() {
+        copyIcon.textContent = '✅';
+        showNotification(`All ${emails.length} email variations copied to clipboard!`, 'success');
+        
+        // Reset icon after 2 seconds
+        setTimeout(function() {
+            copyIcon.textContent = '📋';
+        }, 2000);
+    }
+}
+
+// Notification system
+function showNotification(message, type) {
+    // Remove existing notifications
+    let existingNotifications = document.querySelectorAll('.notification');
+    existingNotifications.forEach(function(notification) {
+        notification.remove();
+    });
+    
+    let notification = document.createElement('div');
+    notification.className = 'notification ' + type;
+    notification.innerHTML = message;
+    
+    // Style the notification
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 20px;
+        border-radius: 12px;
+        color: white;
+        font-weight: 500;
+        z-index: 1000;
+        animation: slideInRight 0.3s ease-out;
+        max-width: 300px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    `;
+    
+    if (type === 'success') {
+        notification.style.background = 'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)';
+    } else {
+        notification.style.background = 'linear-gradient(135deg, #f44336 0%, #d32f2f 100%)';
+    }
+    
+    document.body.appendChild(notification);
+    
+    // Remove notification after 4 seconds
+    setTimeout(function() {
+        notification.style.animation = 'slideOutRight 0.3s ease-out';
+        setTimeout(function() {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 300);
+    }, 4000);
+}
+
+// Add CSS animations for notifications
+let style = document.createElement('style');
+style.textContent = `
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(100%);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    @keyframes slideOutRight {
+        from {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        to {
+            opacity: 0;
+            transform: translateX(100%);
+        }
+    }
+`;
+document.head.appendChild(style);
+</script>
+
+</body>
+</html>
